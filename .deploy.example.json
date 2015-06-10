@@ -1,0 +1,7 @@
+{
+  "servers": {
+    "dev": {
+      "rsyncDest": "username@username.studio.mcad.edu:~/username.studio.mcad.edu/public_html/exd-projects/projectnamehere"
+    }
+  }
+}
