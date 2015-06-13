@@ -6,7 +6,16 @@
 
 2. `cd <yourprojectname>`
 
-3. `npm install && bower install` to install npm and bower dependencies such as browserify, gulp, etc.
+3. Create a new repo to house your project on Github
+
+4. Change the remote url to point to your new repo, and upload to git
+  ```
+  git remote remove origin
+  git remote add origin <your github repo url>
+  git push -u origin master
+  ```
+
+5. `npm install && bower install` to install npm and bower dependencies such as browserify, gulp, etc.
 
 Your project is now ready for code
 
