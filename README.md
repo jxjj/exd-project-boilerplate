@@ -15,7 +15,9 @@
   git push -u origin master
   ```
 
-5. `npm install && bower install` to install npm and bower dependencies such as browserify, gulp, etc.
+5. copy `.deploy.example.json` to `.deploy.json`. Fill in with your server information. BE VERY CAREFUL that you put the correct folder name. You don't want this project to overwrite all the others.
+
+7. `npm install && bower install` to install npm and bower dependencies such as browserify, gulp, etc.
 
 Your project is now ready for code
 
@@ -31,5 +33,5 @@ Starts karma for test driven development
 Compiles the project so that its ready for deploy.
 
 `gulp deploy`
-Uploads your project to your server (using rsync). You must configure your `.deploy.json` file and public ssh key first.
+Uploads your project to your server (using rsync). You must configure your `.deploy.json` file and public ssh key first. Decent instructions here: [Setup your public ssh key](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys--2).
 
