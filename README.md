@@ -2,9 +2,11 @@
 
 ## Setup
 
-1. `git clone git@github.com:johnsojr/exd-project-boilerplate.git <yourprojectname>` to clone this boilerplate into a new folder.
+1. Create a new project folder: `mkdir <yourprojectname>`
 
 2. `cd <yourprojectname>`
+
+3. `git clone git@github.com:johnsojr/exd-project-boilerplate.git .` to clone this boilerplate into your current directory.
 
 3. Create a new repo to house your project on Github
 
@@ -20,6 +22,9 @@
 7. `npm install && bower install` to install npm and bower dependencies such as browserify, gulp, etc.
 
 Your project is now ready for code
+
+## Scripted setup
+See [new-project.sh](https://gist.github.com/johnsojr/034a7141a6dac1b288f4) for a script to setup new projects. Note: You will need to setup a github token for this to work.
 
 ## Important gulp commands
 
