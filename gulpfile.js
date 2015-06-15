@@ -10,7 +10,7 @@ var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var babelify = require('babelify');
-var watchify = require('watchify'); // for faster browserify builds
+//var watchify = require('watchify'); // for faster browserify builds
 var assign = require('lodash.assign');
 var gutil = require('gulp-util');
 var sourcemaps = require('gulp-sourcemaps');
@@ -38,24 +38,6 @@ gulp.task('styles', function () {
 });
 
 
-// JSHINT
-///////////////////////////////////////
-gulp.task('jshint', function () {
-  return gulp.src('app/scripts/**/*.js')
-    .pipe(reload({stream: true, once: true}))
-    .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
-});
-
-// TDD with KARMA
-///////////////////////////////
-gulp.task('tdd', function (done) {
-  karma.start({
-    configFile: __dirname + '/karma.conf.js'
-  }, done);
-});
-
 // IMAGE COMPRESSION
 //////////////////////////////////////
 gulp.task('images', function () {
@@ -82,22 +64,6 @@ gulp.task('fonts', function () {
 });
 
 
-// EXTRAS
-////////////////////////////////////////
-gulp.task('extras', function () {
-  return gulp.src([
-    'app/*.*',
-    '!app/*.html'
-  ], {
-    dot: true
-  }).pipe(gulp.dest('dist'));
-});
-
-// CLEAN
-////////////////////////////////////////
-gulp.task('clean', require('del').bind(null, ['.tmp', 'dist']));
-
-
 // WATCH
 ////////////////////////////////////////
 gulp.task('serve', ['styles', 'fonts', 'browserify'], function () {
@@ -116,17 +82,18 @@ gulp.task('serve', ['styles', 'fonts', 'browserify'], function () {
   // watch for changes
   gulp.watch([
     'app/*.html',
-    'app/scripts/**/*.js',
     'app/images/**/*',
     '.tmp/fonts/**/*',
-    '.tmp/scripts/**/*.js'
   ]).on('change', reload);
 
   gulp.watch('app/styles/**/*.scss', ['styles']);
   gulp.watch('app/fonts/**/*', ['fonts']);
   gulp.watch('bower.json', ['wiredep', 'fonts']);
-  gulp.watch('app/scripts/**/*.js', ['jshint']);
+  gulp.watch('app/scripts/**/*.js', ['jshint','js-watch']);
 });
+
+// make sure browserify completes before reloading
+gulp.task('js-watch', ['browserify'], browserSync.reload);
 
 // WIRE DEPENDENCIES (BOWER)
 // (unnecessary with browserify?)
@@ -148,44 +115,36 @@ gulp.task('wiredep', function () {
 });
 
 
+// JSHINT
+///////////////////////////////////////
+gulp.task('jshint', function () {
+  return gulp.src('app/scripts/**/*.js')
+    .pipe(reload({stream: true, once: true}))
+    .pipe($.jshint())
+    .pipe($.jshint.reporter('jshint-stylish'))
+    .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
+});
+
+// TDD with KARMA
+///////////////////////////////
+gulp.task('tdd', function (done) {
+  karma.start({
+    configFile: __dirname + '/karma.conf.js'
+  }, done);
+});
+
 // BROWSERIFY
 /////////////////////////////////
-var customOpts = {
-  entries: ['./app/scripts/main.js'],
-  debug: true
-};
-var opts = assign({}, watchify.args, customOpts);
-var b = watchify(browserify(opts)).transform(babelify);
-
-function bundle() {
-  return b.bundle()
-    // log errors if they happen
-    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-    .pipe(source('bundle.js'))
-    // optional, remove if you don't need to buffer file contents
-    .pipe(buffer())
-    // optional, remove if you dont want sourcemaps
-    .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
-    .pipe(sourcemaps.write('.')) // writes .map file
-    .pipe(gulp.dest('./.tmp/scripts'));
-}
-
-
-gulp.task('browserify', bundle); // so you can run `gulp js` to build the file
-b.on('update', bundle); // on any dep update, runs the bundler
-b.on('log', gutil.log); // output build logs to terminal
-
-// BUILD:BROWSERIFY (for going to production)
-////////////////////////////////////////////
-gulp.task('build:browserify', function(){
-  return browserify('app/scripts/main.js')
+gulp.task('browserify', function(){
+  return browserify({
+      entries: ['./app/scripts/main.js'],
+      debug: true
+    })
     .transform(babelify)
     .bundle()
     .on("error", function (err) { console.log("Error : " + err.message); })
     .pipe(source('bundle.js'))
     .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('.tmp/scripts'));
 });
 
@@ -205,9 +164,24 @@ gulp.task('html', ['styles'], function () {
     .pipe(gulp.dest('dist'));
 });
 
+// EXTRAS
+////////////////////////////////////////
+gulp.task('extras', function () {
+  return gulp.src([
+    'app/*.*',
+    '!app/*.html'
+  ], {
+    dot: true
+  }).pipe(gulp.dest('dist'));
+});
+
+// CLEAN
+////////////////////////////////////////
+gulp.task('clean', require('del').bind(null, ['.tmp', 'dist']));
+
 // BUILD:STYLES-SCRIPTS (move .tmp to dist on build)
 ////////////////////////////////////////////////////
-gulp.task('build:styles-scripts', ['styles','build:browserify'], function(){
+gulp.task('build:styles-scripts', ['styles','browserify'], function(){
   return gulp.src('.tmp/**/*')
           .pipe(gulp.dest('dist'));
 });
