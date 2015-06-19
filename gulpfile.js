@@ -89,11 +89,11 @@ gulp.task('serve', ['styles', 'fonts', 'browserify'], function () {
   gulp.watch('app/styles/**/*.scss', ['styles']);
   gulp.watch('app/fonts/**/*', ['fonts']);
   gulp.watch('bower.json', ['wiredep', 'fonts']);
-  gulp.watch('app/scripts/**/*.js', ['jshint','js-watch']);
+  gulp.watch('app/scripts/**/*.js', ['jshint','browserify']);
 });
 
 // make sure browserify completes before reloading
-gulp.task('js-watch', ['browserify'], browserSync.reload);
+// gulp.task('js-watch', ['browserify'], browserSync.reload);
 
 // WIRE DEPENDENCIES (BOWER)
 // (unnecessary with browserify?)
@@ -119,7 +119,7 @@ gulp.task('wiredep', function () {
 ///////////////////////////////////////
 gulp.task('jshint', function () {
   return gulp.src('app/scripts/**/*.js')
-    .pipe(reload({stream: true, once: true}))
+    //.pipe(reload({stream: true, once: true}))
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'))
     .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
@@ -145,7 +145,8 @@ gulp.task('browserify', function(){
     .on("error", function (err) { console.log("Error : " + err.message); })
     .pipe(source('bundle.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('.tmp/scripts'));
+    .pipe(gulp.dest('.tmp/scripts'))
+    .pipe(reload({stream: true}));
 });
 
 
