@@ -24,7 +24,7 @@
 Your project is now ready for code
 
 ## Scripted setup
-See [new-project.sh](https://gist.github.com/johnsojr/034a7141a6dac1b288f4) for a script to setup new projects. Note: You will need to setup a github token for this to work.
+See [new-project.sh](https://gist.github.com/geekydatamonkey/034a7141a6dac1b288f4) for a script to setup new projects. Note: You will need to setup a github token for this to work.
 
 ## Important gulp commands
 
